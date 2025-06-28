@@ -1,0 +1,41 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# VSCode and other IDE settings
+.vscode/
+.idea/
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+
+# SQLite database files
+*.db
+*.sqlite3
+
+# Test output / coverage
+htmlcov/
+.coverage
+coverage.xml
+*.log
+
+# Mypy and pyright
+.mypy_cache/
+.pyright/
+
+# PyInstaller
+dist/
+build/
+*.spec
