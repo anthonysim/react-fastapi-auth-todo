@@ -13,10 +13,8 @@ def read_all_tasks(db: Session) -> list[Todo]:
 def create_task(todo: TodoCreate, db: Session) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
-        title=todo.title,
-        description=todo.description,
-        completed=todo.completed,
         created_at=datetime.now(timezone.utc),
+        **todo.model_dump()
     )
     db.add(db_task)
     db.commit()
