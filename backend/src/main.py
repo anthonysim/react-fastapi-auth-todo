@@ -20,13 +20,20 @@ app.add_middleware(
 
 @app.get("/tasks", response_model=list[Todo])
 def read_tasks(db: Session = Depends(get_session)):
+    """
+    Retrieve all tasks from the database.
+
+    - **Returns**: A list of Todo items.
+    """
     return read_all_tasks(db)
+
 
 @app.post("/task", response_model=Todo)
 def add_task(todo: TodoCreate, db: Session = Depends(get_session)):
-    return create_task(todo, db)
+    """
+    Add a new task to the database.
 
-# erase this later
-@app.get("/api/hello")
-def say_hello():
-    return {"message": "Hello from FastAPI"}
+    - **todo**: The task details in the request body.
+    - **Returns**: The created Todo item.
+    """
+    return create_task(todo, db)
