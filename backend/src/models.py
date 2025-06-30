@@ -1,4 +1,4 @@
-
+# models.py is for the "shape" of the db table.
 from sqlalchemy import Column, String, Boolean, DateTime
 from datetime import datetime, timezone
 from uuid import uuid4

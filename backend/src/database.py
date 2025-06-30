@@ -1,3 +1,4 @@
+# database.py is the setup for db.
 from functools import lru_cache
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase

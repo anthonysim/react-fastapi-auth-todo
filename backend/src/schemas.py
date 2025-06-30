@@ -1,3 +1,4 @@
+# schemas.py is for the "shape" of the request and response
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
