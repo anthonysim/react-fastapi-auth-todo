@@ -2,7 +2,7 @@
 from sqlalchemy import Column, String, Boolean, DateTime
 from datetime import datetime, timezone
 from uuid import uuid4
-from src.database import Base  # ✅ import the correct Base
+from src.todos.database import Base  # ✅ import the correct Base
 
 class TodoDB(Base):
     __tablename__ = "todos"
