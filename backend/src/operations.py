@@ -1,6 +1,7 @@
 # the business logic for the API calls
 from uuid import uuid4
 from datetime import datetime, timezone
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src.models import TodoDB
 from src.schemas import Todo, TodoCreate
@@ -20,3 +21,11 @@ def create_task(todo: TodoCreate, db: Session) -> Todo:
     db.commit()
     db.refresh(db_task)
     return Todo.model_validate(db_task)
+
+def remove_task(task_id: str, db: Session) -> Todo:
+    task = db.get(TodoDB, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    db.delete(task)
+    db.commit()
+    return Todo.model_validate(task)

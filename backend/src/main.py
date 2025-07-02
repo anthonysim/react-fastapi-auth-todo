@@ -1,7 +1,11 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from src.schemas import TodoCreate, Todo
-from src.operations import create_task, read_all_tasks
+from src.operations import (
+    create_task,
+    read_all_tasks,
+    remove_task
+    )
 from src.database import get_session, init_db
 from sqlalchemy.orm import Session
 
@@ -37,3 +41,13 @@ def add_task(todo: TodoCreate, db: Session = Depends(get_session)):
     - **Returns**: The created Todo item.
     """
     return create_task(todo, db)
+
+@app.delete("/task/{task_id}", response_model=Todo)
+def delete_task(task_id: str, db: Session = Depends(get_session)):
+    """
+    Delete a task by its ID.
+
+    - **task_id**: The ID of the task to delete.
+    - **Returns**: The deleted Todo item.
+    """
+    return remove_task(task_id, db)
