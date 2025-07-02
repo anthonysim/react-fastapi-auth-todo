@@ -7,10 +7,6 @@ from src.models import TodoDB
 from src.schemas import Todo, TodoCreate
 
 
-def read_all_tasks(db: Session) -> list[Todo]:
-    tasks = db.query(TodoDB).all()
-    return [Todo.model_validate(task) for task in tasks]
-
 def create_task(todo: TodoCreate, db: Session) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
@@ -21,6 +17,33 @@ def create_task(todo: TodoCreate, db: Session) -> Todo:
     db.commit()
     db.refresh(db_task)
     return Todo.model_validate(db_task)
+
+
+def read_all_tasks(db: Session) -> list[Todo]:
+    tasks = db.query(TodoDB).all()
+    return [Todo.model_validate(task) for task in tasks]
+
+
+def get_task(task_id: str, db: Session) -> Todo:
+    task = db.get(TodoDB, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return Todo.model_validate(task)
+
+
+def modify_task(task_id: str, updated_todo: TodoCreate, db: Session) -> Todo:
+    task = db.get(TodoDB, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task.title = updated_todo.title
+    task.description = updated_todo.description
+    task.completed = updated_todo.completed
+
+    db.commit()
+    db.refresh(task)
+    return Todo.model_validate(task)
+
 
 def remove_task(task_id: str, db: Session) -> Todo:
     task = db.get(TodoDB, task_id)
