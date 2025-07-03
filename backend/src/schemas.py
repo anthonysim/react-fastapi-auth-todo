@@ -4,6 +4,7 @@ from typing import Optional
 from uuid import UUID
 from datetime import datetime
 
+# todo schemas
 class TodoCreate(BaseModel):
     title: str
     description: Optional[str] = None
@@ -18,4 +19,17 @@ class Todo(BaseModel):
 
     model_config = {
         "from_attributes": True  # ✅ replaces orm_mode = True in Pydantic v2
+    }
+
+# user schemas
+class UserCreate(BaseModel):
+    email: str
+    password: str
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+
+    model_config = {
+        "from_attributes": True
     }

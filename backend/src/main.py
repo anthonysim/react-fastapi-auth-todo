@@ -1,14 +1,21 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from src.schemas import TodoCreate, Todo
-from src.operations import (
+from fastapi.security import OAuth2PasswordRequestForm
+from schemas import TodoCreate, Todo, UserCreate, User
+from operations import (
     create_task,
     read_all_tasks,
     get_task,
     remove_task,
     modify_task
     )
-from src.database import get_session, init_db
+from auth import (
+    hash_password,
+    verify_password,
+    create_access_token
+    )
+from dependencies import get_current_user
+from database import get_session, init_db
 from sqlalchemy.orm import Session
 
 # creates table upon startup
@@ -24,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# todo api routes
 @app.post("/task", response_model=Todo)
 def add_task(todo: TodoCreate, db: Session = Depends(get_session)):
     """
@@ -78,3 +85,24 @@ def delete_task(task_id: str, db: Session = Depends(get_session)):
     - **Returns**: The deleted Todo item.
     """
     return remove_task(task_id, db)
+
+# user registration, login, logout api routes
+@app.post("/register")
+def register(user: UserCreate, db: Session = Depends(get_session)):
+    db_user = db.query(User).filter(User.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    hashed = hash_password(user.password)
+    new_user = User(email=user.email, hashed_password=hashed)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"msg": "User created"}
+
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = create_access_token({"sub": str(user.id)})
+    return {"access_token": token, "token_type": "bearer"}

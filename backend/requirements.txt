@@ -1,3 +1,6 @@
 fastapi[all]
 sqlalchemy>=2.0.0
 bcrypt==3.2.2
+passlib[bcrypt]
+python-dotenv
+python-jose[cryptography]
