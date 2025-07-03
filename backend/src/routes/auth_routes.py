@@ -15,7 +15,6 @@ from src.dependencies import get_current_user
 from src.models import User
 from src.schemas import UserCreate, UserOut
 
-
 router = APIRouter()
 
 
