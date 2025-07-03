@@ -16,6 +16,7 @@ class Todo(BaseModel):
     description: Optional[str] = None
     completed: bool
     created_at: datetime
+    user_id: int
 
     model_config = {
         "from_attributes": True  # ✅ replaces orm_mode = True in Pydantic v2

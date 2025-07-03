@@ -3,14 +3,15 @@ from uuid import uuid4
 from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.models import TodoDB
+from src.models import TodoDB, User
 from src.schemas import Todo, TodoCreate
 
 
-def create_task(todo: TodoCreate, db: Session) -> Todo:
+def create_task(todo: TodoCreate, db: Session, user: User) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
         created_at=datetime.now(timezone.utc),
+        user_id=user.id,
         **todo.model_dump()
     )
     db.add(db_task)

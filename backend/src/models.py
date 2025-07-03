@@ -6,6 +6,8 @@ from sqlalchemy import (
     Integer,
     String
     )
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from uuid import uuid4
 from src.database import Base  # ✅ import the correct Base
@@ -20,6 +22,9 @@ class TodoDB(Base):
     completed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="todos")
+
 # db table for users (register, login, logout)
 class User(Base):
     __tablename__ = "users"
@@ -27,3 +32,5 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+
+    todos = relationship("TodoDB", back_populates="user", cascade="all, delete")
