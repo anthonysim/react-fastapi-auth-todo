@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from src.schemas import TodoCreate, Todo, UserCreate
+from src.schemas import TodoCreate, Todo, UserCreate, UserOut
 from src.models import User
 from src.operations import (
     create_task,
@@ -15,6 +15,7 @@ from src.auth import (
     verify_password,
     create_access_token
     )
+from dependencies import get_current_user
 from src.database import get_session, init_db
 from sqlalchemy.orm import Session
 
@@ -107,9 +108,23 @@ def register(user: UserCreate, db: Session = Depends(get_session)):
     return {"msg": "User created"}
 
 @app.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_session)
+):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
     token = create_access_token({"sub": str(user.id)})
-    return {"access_token": token, "token_type": "bearer"}
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": UserOut.model_validate(user)  # ✅ Cleanly returns user info
+    }
+
+
+@app.get("/me", response_model=UserOut)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
