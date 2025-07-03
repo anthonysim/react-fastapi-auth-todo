@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 # Database URL
-SQLALCHEMY_DATABASE_URL = "sqlite:///./todo.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./database.db"
 
 # Engine (singleton via LRU cache)
 @lru_cache

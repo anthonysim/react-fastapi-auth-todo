@@ -1,21 +1,21 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from schemas import TodoCreate, Todo, UserCreate, User
-from operations import (
+from src.schemas import TodoCreate, Todo, UserCreate
+from src.models import User
+from src.operations import (
     create_task,
     read_all_tasks,
     get_task,
     remove_task,
     modify_task
     )
-from auth import (
+from src.auth import (
     hash_password,
     verify_password,
     create_access_token
     )
-from dependencies import get_current_user
-from database import get_session, init_db
+from src.database import get_session, init_db
 from sqlalchemy.orm import Session
 
 # creates table upon startup
@@ -51,6 +51,13 @@ def read_tasks(db: Session = Depends(get_session)):
     - **Returns**: A list of Todo items.
     """
     return read_all_tasks(db)
+
+# @app.get("/tasks", response_model=Todo)
+# def read_tasks(
+#     db: Session = Depends(get_session),
+#     current_user = Depends(get_current_user)  # 👈 adds auth protection
+# ):
+#     return read_all_tasks(db)
 
 
 @app.get("/task/{task_id}", response_model=Todo)

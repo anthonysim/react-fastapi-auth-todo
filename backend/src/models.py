@@ -8,7 +8,7 @@ from sqlalchemy import (
     )
 from datetime import datetime, timezone
 from uuid import uuid4
-from database import Base  # ✅ import the correct Base
+from src.database import Base  # ✅ import the correct Base
 
 # db table for todos
 class TodoDB(Base):
