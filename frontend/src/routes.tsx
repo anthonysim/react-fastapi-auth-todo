@@ -4,7 +4,7 @@ import {
   createRoute,
   Outlet,
 } from "@tanstack/react-router";
-import TodosPage from "./pages/Todos";
+import Todos from "./pages/Todos";
 import App from "./App";
 
 const rootRoute = createRootRoute({
@@ -24,7 +24,7 @@ const homeRoute = createRoute({
 const todosRoute = createRoute({
   path: "/todos",
   getParentRoute: () => rootRoute,
-  component: TodosPage,
+  component: Todos,
 });
 
 const routeTree = rootRoute.addChildren([homeRoute, todosRoute]);
