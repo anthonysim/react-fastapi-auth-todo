@@ -13,7 +13,8 @@ from src.operations import (
 from src.auth import (
     hash_password,
     verify_password,
-    create_access_token
+    create_access_token,
+    create_refresh_token
     )
 from dependencies import get_current_user
 from src.database import get_session, init_db
@@ -134,6 +135,47 @@ def login(
     }
 
 
+# @app.post("/login")
+# def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
+#     user = db.query(User).filter(User.email == form_data.username).first()
+#     if not user or not verify_password(form_data.password, user.hashed_password):
+#         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+#     access_token = create_access_token({"sub": str(user.id)})
+#     refresh_token = create_refresh_token({"sub": str(user.id)})
+
+#     response = JSONResponse(content={"access_token": access_token, "token_type": "bearer"})
+#     response.set_cookie(
+#         key="refresh_token",
+#         value=refresh_token,
+#         httponly=True,
+#         secure=True,
+#         samesite="strict",
+#         max_age=7 * 24 * 60 * 60
+#     )
+#     return response
+
+
 @app.get("/me", response_model=UserOut)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+# @app.post("/refresh")
+# def refresh_token(request: Request):
+#     refresh_token = request.cookies.get("refresh_token")
+#     if not refresh_token:
+#         raise HTTPException(status_code=403, detail="Refresh token missing")
+
+#     try:
+#         payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+#         user_id = payload.get("sub")
+#         if user_id is None:
+#             raise HTTPException(status_code=403, detail="Invalid token")
+
+#         new_access_token = create_access_token({"sub": user_id})
+#         return {"access_token": new_access_token}
+#     except JWTError:
+#         raise HTTPException(status_code=403, detail="Invalid or expired refresh token")
+
+
