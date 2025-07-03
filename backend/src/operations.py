@@ -3,8 +3,8 @@ from uuid import uuid4
 from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.todos.models import TodoDB
-from src.todos.schemas import Todo, TodoCreate
+from src.models import TodoDB
+from src.schemas import Todo, TodoCreate
 
 
 def create_task(todo: TodoCreate, db: Session) -> Todo:

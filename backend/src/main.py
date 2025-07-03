@@ -1,14 +1,14 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from src.todos.schemas import TodoCreate, Todo
-from src.todos.operations import (
+from src.schemas import TodoCreate, Todo
+from src.operations import (
     create_task,
     read_all_tasks,
     get_task,
     remove_task,
     modify_task
     )
-from src.todos.database import get_session, init_db
+from src.database import get_session, init_db
 from sqlalchemy.orm import Session
 
 # creates table upon startup
