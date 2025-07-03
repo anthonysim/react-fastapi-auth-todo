@@ -53,12 +53,13 @@ def read_tasks(db: Session = Depends(get_session)):
     """
     return read_all_tasks(db)
 
-# @app.get("/tasks", response_model=Todo)
+
+# @app.get("/tasks", response_model=list[Todo])
 # def read_tasks(
 #     db: Session = Depends(get_session),
-#     current_user = Depends(get_current_user)  # 👈 adds auth protection
+#     current_user: User = Depends(get_current_user)
 # ):
-#     return read_all_tasks(db)
+#     return read_all_tasks(db, user_id=current_user.id)
 
 
 @app.get("/task/{task_id}", response_model=Todo)

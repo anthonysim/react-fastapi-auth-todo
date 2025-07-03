@@ -19,8 +19,8 @@ def create_task(todo: TodoCreate, db: Session) -> Todo:
     return Todo.model_validate(db_task)
 
 
-def read_all_tasks(db: Session) -> list[Todo]:
-    tasks = db.query(TodoDB).all()
+def read_all_tasks(db: Session, user_id: str) -> list[Todo]:
+    tasks = db.query(TodoDB).filter(TodoDB.user_id == user_id).all()
     return [Todo.model_validate(task) for task in tasks]
 
 
