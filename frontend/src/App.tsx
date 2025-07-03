@@ -1,15 +1,50 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { AuthAction, AuthPrompt } from "./types/types";
 
 function App() {
   const [msg, setMsg] = useState("");
   const [isSignIn, setIsSignIn] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/hello`)
       .then((res) => res.json())
       .then((data) => setMsg(data.message));
   }, []);
+
+  const handleAuth = async () => {
+    const endpoint = `${import.meta.env.VITE_API_URL}/${isSignIn ? "login" : "register"}`;
+
+    const body = isSignIn
+      ? new URLSearchParams({ username: email, password: password })
+      : JSON.stringify({ email, password });
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": isSignIn
+            ? "application/x-www-form-urlencoded"
+            : "application/json",
+        },
+        body,
+      });
+
+      if (!res.ok) throw new Error("Auth failed");
+
+      const data = await res.json();
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      navigate({ to: "/todo" }); // ✅ Redirect
+    } catch (err) {
+      alert("Failed to authenticate");
+      console.error(err);
+    }
+  };
 
   const title = isSignIn ? AuthAction.SignIn : AuthAction.Register;
   const actionColor = isSignIn
@@ -37,17 +72,21 @@ function App() {
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 placeholder-gray-400 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 placeholder-gray-400 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <button
             className={`w-full py-2 rounded text-white font-semibold transition ${actionColor}`}
-            onClick={() => console.log(`${title} Clicked`)}
+            onClick={handleAuth} // ✅ call your logic
           >
             {title}
           </button>

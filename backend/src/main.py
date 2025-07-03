@@ -100,12 +100,20 @@ def register(user: UserCreate, db: Session = Depends(get_session)):
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+
     hashed = hash_password(user.password)
     new_user = User(email=user.email, hashed_password=hashed)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"msg": "User created"}
+
+    token = create_access_token({"sub": str(new_user.id)})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": UserOut.model_validate(new_user)
+    }
+
 
 @app.post("/login")
 def login(
