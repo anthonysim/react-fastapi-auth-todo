@@ -9,8 +9,6 @@ import {
 import Todos from "./pages/Todos";
 import App from "./App";
 
-import { auth } from "./auth/auth";
-
 const rootRoute = createRootRoute({
   component: () => (
     <div>
@@ -30,8 +28,9 @@ const todosRoute = createRoute({
   getParentRoute: () => rootRoute,
   component: Todos,
   loader: async () => {
-    if (!auth.isAuthenticated) {
-      throw redirect({ to: "/" });
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw redirect({ to: "/" }); // not logged in
     }
     return null;
   },
