@@ -39,6 +39,3 @@ coverage.xml
 dist/
 build/
 *.spec
-
-#vscode
-.vscode/
