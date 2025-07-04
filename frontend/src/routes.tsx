@@ -3,7 +3,7 @@ import {
   createRootRoute,
   createRoute,
   Outlet,
-  // redirect,
+  redirect,
 } from "@tanstack/react-router";
 
 import TodoList from "./pages/TodoList";
@@ -27,13 +27,13 @@ const todosRoute = createRoute({
   path: "/todos",
   getParentRoute: () => rootRoute,
   component: TodoList,
-  // loader: async () => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     throw redirect({ to: "/" }); // not logged in
-  //   }
-  //   return null;
-  // },
+  loader: async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw redirect({ to: "/" }); // not logged in
+    }
+    return null;
+  },
 });
 
 const routeTree = rootRoute.addChildren([homeRoute, todosRoute]);
