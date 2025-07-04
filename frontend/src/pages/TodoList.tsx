@@ -62,7 +62,7 @@ export default function TodoList() {
   return (
     <div className="min-h-screen p-10 text-white bg-gray-950">
       <div className="max-w-6xl mx-auto">
-        <h1 className="mb-4 text-3xl font-bold text-center">Todo Grid</h1>
+        <h1 className="mb-4 text-3xl font-bold text-center">Todo List</h1>
 
         {/* Add Form Below Title */}
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-4">

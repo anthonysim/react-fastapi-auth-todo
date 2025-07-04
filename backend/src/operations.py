@@ -7,11 +7,11 @@ from src.models import TodoDB, User
 from src.schemas import Todo, TodoCreate
 
 
-def create_task(todo: TodoCreate, db: Session, user: User) -> Todo:
+def create_task(todo: TodoCreate, db: Session, user_id: str) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
         created_at=datetime.now(timezone.utc),
-        user_id=user.id,
+        user_id=user_id,
         **todo.model_dump()
     )
     db.add(db_task)
@@ -25,16 +25,21 @@ def read_all_tasks(db: Session, user_id: str) -> list[Todo]:
     return [Todo.model_validate(task) for task in tasks]
 
 
-def get_task(task_id: str, db: Session) -> Todo:
+def get_task(task_id: str, db: Session, user_id: str) -> Todo:
     task = db.get(TodoDB, task_id)
-    if not task:
+    if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
     return Todo.model_validate(task)
 
 
-def modify_task(task_id: str, updated_todo: TodoCreate, db: Session) -> Todo:
+def modify_task(
+    task_id: str,
+    updated_todo: TodoCreate,
+    db: Session,
+    user_id: str
+) -> Todo:
     task = db.get(TodoDB, task_id)
-    if not task:
+    if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
 
     task.title = updated_todo.title
@@ -46,10 +51,11 @@ def modify_task(task_id: str, updated_todo: TodoCreate, db: Session) -> Todo:
     return Todo.model_validate(task)
 
 
-def remove_task(task_id: str, db: Session) -> Todo:
+def remove_task(task_id: str, db: Session, user_id: str) -> Todo:
     task = db.get(TodoDB, task_id)
-    if not task:
+    if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
+
     db.delete(task)
     db.commit()
     return Todo.model_validate(task)
