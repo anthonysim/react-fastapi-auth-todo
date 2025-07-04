@@ -15,6 +15,23 @@ export default function TodoList() {
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDesc, setEditedDesc] = useState("");
 
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+
+  const addTodo = () => {
+    if (!newTitle.trim()) return;
+
+    const newTodo: Todo = {
+      id: Date.now(),
+      title: newTitle,
+      description: newDesc,
+    };
+
+    setTodos((prev) => [newTodo, ...prev]);
+    setNewTitle("");
+    setNewDesc("");
+  };
+
   const startEdit = (todo: Todo) => {
     setEditingId(todo.id);
     setEditedTitle(todo.title);
@@ -45,16 +62,38 @@ export default function TodoList() {
   return (
     <div className="min-h-screen p-10 text-white bg-gray-950">
       <div className="max-w-6xl mx-auto">
-        <h1 className="mb-6 text-3xl font-bold text-center">Todo Grid</h1>
+        <h1 className="mb-4 text-3xl font-bold text-center">Todo Grid</h1>
 
-        {/* Grid Header */}
+        {/* Add Form Below Title */}
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-4">
+          <input
+            className="p-2 text-white bg-gray-800 border border-gray-700 rounded"
+            placeholder="Title"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+          />
+          <input
+            className="p-2 text-white bg-gray-800 border border-gray-700 rounded"
+            placeholder="Description"
+            value={newDesc}
+            onChange={(e) => setNewDesc(e.target.value)}
+          />
+          <button
+            onClick={addTodo}
+            className="self-center px-3 py-1 text-sm font-medium bg-indigo-600 rounded hover:bg-indigo-700"
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Table Header */}
         <div className="grid grid-cols-3 gap-2 p-3 text-sm font-semibold bg-gray-800 border-b border-gray-700 rounded-t-lg">
           <div>Title</div>
           <div>Description</div>
           <div className="text-center">Actions</div>
         </div>
 
-        {/* Grid Rows */}
+        {/* Table Rows */}
         {todos.map((todo) => (
           <div
             key={todo.id}
