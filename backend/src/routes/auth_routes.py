@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
+
+from jose import jwt, JWTError
 
 from src.auth import (
     hash_password,
@@ -14,6 +16,16 @@ from src.database import get_session
 from src.dependencies import get_current_user
 from src.models import User
 from src.schemas import UserCreate, UserOut
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+REFRESH_SECRET_KEY = os.getenv("REFRESH_SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+
+REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7))
 
 router = APIRouter()
 
@@ -72,19 +84,19 @@ def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-# @router.post("/refresh")
-# def refresh_token(request: Request):
-#     refresh_token = request.cookies.get("refresh_token")
-#     if not refresh_token:
-#         raise HTTPException(status_code=403, detail="Refresh token missing")
+@router.post("/refresh")
+def refresh_token(request: Request):
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=403, detail="Refresh token missing")
 
-#     try:
-#         payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
-#         user_id = payload.get("sub")
-#         if user_id is None:
-#             raise HTTPException(status_code=403, detail="Invalid token")
+    try:
+        payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=403, detail="Invalid token")
 
-#         new_access_token = create_access_token({"sub": user_id})
-#         return {"access_token": new_access_token}
-#     except JWTError:
-#         raise HTTPException(status_code=403, detail="Invalid or expired refresh token")
+        new_access_token = create_access_token({"sub": user_id})
+        return {"access_token": new_access_token}
+    except JWTError:
+        raise HTTPException(status_code=403, detail="Invalid or expired refresh token")

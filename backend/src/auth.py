@@ -4,7 +4,7 @@ from jose import jwt, JWTError
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Loads variables from .env into environment
+load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 REFRESH_SECRET_KEY = os.getenv("REFRESH_SECRET_KEY")
