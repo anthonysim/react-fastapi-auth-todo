@@ -6,7 +6,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 
-import Todos from "./pages/Todos";
+import TodoList from "./pages/TodoList";
 import App from "./App";
 
 const rootRoute = createRootRoute({
@@ -26,7 +26,7 @@ const homeRoute = createRoute({
 const todosRoute = createRoute({
   path: "/todos",
   getParentRoute: () => rootRoute,
-  component: Todos,
+  component: TodoList,
   loader: async () => {
     const token = localStorage.getItem("token");
     if (!token) {
