@@ -74,7 +74,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         httponly=True,
         secure=True,
         samesite="strict",
-        max_age=7 * 24 * 60 * 60
+        max_age=7 * 24 * 60 * 60, # 7 days
+        path="/refresh"
     )
     return response
 

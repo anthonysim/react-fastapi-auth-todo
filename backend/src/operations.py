@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.models import TodoDB, User
+from src.models import TodoDB
 from src.schemas import Todo, TodoCreate
 
 
