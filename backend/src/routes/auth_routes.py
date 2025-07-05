@@ -31,7 +31,7 @@ router = APIRouter()
 
 
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_session)):
+async def register(user: UserCreate, db: Session = Depends(get_session)):
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -51,7 +51,7 @@ def register(user: UserCreate, db: Session = Depends(get_session)):
 
 
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -80,12 +80,12 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 
 @router.get("/me", response_model=UserOut)
-def get_me(current_user: User = Depends(get_current_user)):
+async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
 @router.post("/refresh")
-def refresh_token(request: Request):
+async def refresh_token(request: Request):
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         raise HTTPException(status_code=403, detail="Refresh token missing")

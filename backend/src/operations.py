@@ -7,7 +7,7 @@ from src.models import TodoDB, User
 from src.schemas import Todo, TodoCreate
 
 
-def create_task(todo: TodoCreate, db: Session, user_id: str) -> Todo:
+async def create_task(todo: TodoCreate, db: Session, user_id: str) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
         created_at=datetime.now(timezone.utc),
@@ -20,7 +20,7 @@ def create_task(todo: TodoCreate, db: Session, user_id: str) -> Todo:
     return Todo.model_validate(db_task)
 
 
-def read_all_tasks(db: Session, user_id: str) -> list[Todo]:
+async def read_all_tasks(db: Session, user_id: str) -> list[Todo]:
     tasks = db.query(TodoDB).filter(TodoDB.user_id == user_id).all()
     return [Todo.model_validate(task) for task in tasks]
 
@@ -32,7 +32,7 @@ def get_task(task_id: str, db: Session, user_id: str) -> Todo:
     return Todo.model_validate(task)
 
 
-def modify_task(
+async def modify_task(
     task_id: str,
     updated_todo: TodoCreate,
     db: Session,
@@ -51,7 +51,7 @@ def modify_task(
     return Todo.model_validate(task)
 
 
-def remove_task(task_id: str, db: Session, user_id: str) -> Todo:
+async def remove_task(task_id: str, db: Session, user_id: str) -> Todo:
     task = db.get(TodoDB, task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")

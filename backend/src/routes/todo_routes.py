@@ -32,7 +32,7 @@ def add_task(
 
 
 @router.get("/tasks", response_model=list[Todo])
-def read_tasks(
+async def read_tasks(
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
@@ -45,7 +45,7 @@ def read_tasks(
 
 
 @router.get("/task/{task_id}", response_model=Todo)
-def read_task(
+async def read_task(
     task_id: str,
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
@@ -60,7 +60,7 @@ def read_task(
 
 
 @router.patch("/task/{task_id}", response_model=Todo)
-def update_task(
+async def update_task(
     task_id: str,
     updated_todo: TodoCreate,
     db: Session = Depends(get_session),
@@ -77,7 +77,7 @@ def update_task(
 
 
 @router.delete("/task/{task_id}", response_model=Todo)
-def delete_task(
+async def delete_task(
     task_id: str,
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
