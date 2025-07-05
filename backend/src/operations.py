@@ -7,7 +7,11 @@ from src.models import TodoDB
 from src.schemas import Todo, TodoCreate
 
 
-async def create_task(todo: TodoCreate, db: Session, user_id: str) -> Todo:
+async def create_task(
+        todo: TodoCreate,
+        db: Session,
+        user_id: str
+) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
         created_at=datetime.now(timezone.utc),
@@ -20,12 +24,19 @@ async def create_task(todo: TodoCreate, db: Session, user_id: str) -> Todo:
     return Todo.model_validate(db_task)
 
 
-async def read_all_tasks(db: Session, user_id: str) -> list[Todo]:
+async def read_all_tasks(
+        db: Session,
+        user_id: str
+) -> list[Todo]:
     tasks = db.query(TodoDB).filter(TodoDB.user_id == user_id).all()
     return [Todo.model_validate(task) for task in tasks]
 
 
-def get_task(task_id: str, db: Session, user_id: str) -> Todo:
+def get_task(
+        task_id: str,
+        db: Session,
+        user_id: str
+) -> Todo:
     task = db.get(TodoDB, task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -51,7 +62,11 @@ async def modify_task(
     return Todo.model_validate(task)
 
 
-async def remove_task(task_id: str, db: Session, user_id: str) -> Todo:
+async def remove_task(
+        task_id: str,
+        db: Session,
+        user_id: str
+) -> Todo:
     task = db.get(TodoDB, task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")

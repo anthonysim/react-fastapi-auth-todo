@@ -32,7 +32,10 @@ router = APIRouter()
 
 
 @router.post("/register")
-async def register(user: UserCreate, db: AsyncSession = Depends(get_session)):
+async def register(
+    user: UserCreate,
+    db: AsyncSession = Depends(get_session)
+):
     result = await db.execute(select(User).where(User.email == user.email))
     db_user = result.scalar_one_or_none()
 
