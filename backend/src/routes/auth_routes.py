@@ -55,8 +55,13 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_session)):
 
 
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)):
-    user = db.query(User).filter(User.email == form_data.username).first()
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_session)
+):
+    result = await db.execute(select(User).where(User.email == form_data.username))
+    user = result.scalar_one_or_none()
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -64,8 +69,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token({"sub": str(user.id)})
-    refresh_token = create_refresh_token({"sub": str(user.id)})
+    access_token = await create_access_token({"sub": str(user.id)})
+    refresh_token = await create_refresh_token({"sub": str(user.id)})
 
     response = JSONResponse(content={
         "access_token": access_token,
@@ -78,7 +83,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         httponly=True,
         secure=True,
         samesite="strict",
-        max_age=7 * 24 * 60 * 60, # 7 days
+        max_age=7 * 24 * 60 * 60,
         path="/refresh"
     )
     return response
