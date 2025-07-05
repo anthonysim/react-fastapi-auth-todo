@@ -45,12 +45,11 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_session)):
     await db.commit()
     await db.refresh(new_user)
 
-    access_token = await create_access_token({"sub": str(new_user.id)})
     return {
-        "access_token": access_token,
-        "token_type": "bearer",
+        "message": "User registered successfully",
         "user": UserOut.model_validate(new_user)
     }
+
 
 
 @router.post("/login")
