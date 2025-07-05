@@ -105,7 +105,7 @@ async def refresh_token(request: Request):
         if user_id is None:
             raise HTTPException(status_code=403, detail="Invalid token")
 
-        new_access_token = create_access_token({"sub": user_id})
+        new_access_token = await create_access_token({"sub": user_id})
         return {"access_token": new_access_token}
     except JWTError:
         raise HTTPException(status_code=403, detail="Invalid or expired refresh token")
