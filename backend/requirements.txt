@@ -1,4 +1,5 @@
 fastapi[all]
+aiosqlite
 asyncpg
 bcrypt==3.2.2
 passlib[bcrypt]

@@ -1,13 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from contextlib import asynccontextmanager
+
 from src.database import init_db
 from src.routes import auth_routes, todo_routes
 
-# creates table upon startup
-init_db()
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await init_db()
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

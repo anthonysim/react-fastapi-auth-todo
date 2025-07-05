@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from jose import jwt, JWTError
 
@@ -31,20 +33,22 @@ router = APIRouter()
 
 
 @router.post("/register")
-async def register(user: UserCreate, db: Session = Depends(get_session)):
-    db_user = db.query(User).filter(User.email == user.email).first()
+async def register(user: UserCreate, db: AsyncSession = Depends(get_session)):
+    result = await db.execute(select(User).where(User.email == user.email))
+    db_user = result.scalar_one_or_none()
+
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    hashed = hash_password(user.password)
+    hashed = await hash_password(user.password)
     new_user = User(email=user.email, hashed_password=hashed)
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    await db.commit()
+    await db.refresh(new_user)
 
-    token = create_access_token({"sub": str(new_user.id)})
+    access_token = await create_access_token({"sub": str(new_user.id)})
     return {
-        "access_token": token,
+        "access_token": access_token,
         "token_type": "bearer",
         "user": UserOut.model_validate(new_user)
     }
