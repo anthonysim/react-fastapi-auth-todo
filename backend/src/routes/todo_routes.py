@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post("/task", response_model=Todo)
-def add_task(
+async def add_task(
     todo: TodoCreate,
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
