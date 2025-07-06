@@ -56,9 +56,11 @@ async def modify_task(
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    task.title = updated_todo.title
-    task.description = updated_todo.description
-    task.completed = updated_todo.completed
+    currentTask = await get_task(task_id, db, user_id)
+
+    task.title = updated_todo.title if updated_todo.title else currentTask.title
+    task.description = updated_todo.description if updated_todo.description else currentTask.description
+    task.completed = updated_todo.completed if updated_todo.completed is not None else currentTask.completed
 
     await db.commit()
     await db.refresh(task)
