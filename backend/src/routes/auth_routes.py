@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,9 +14,11 @@ from src.auth.auth import (
     create_refresh_token,
     verify_password
     )
-from src.databases.sqlite_database import get_session
+# from src.databases.sqlite_database import get_session
+from src.databases.pg_database import get_session
 from src.auth.dependencies import get_current_user
-from src.models.sqlite_models import User
+# from src.models.sqlite_models import User
+from src.models.pg_models import User
 from src.schemas.schemas import UserCreate, UserOut
 
 import os
@@ -54,6 +57,8 @@ async def register(
     }
 
 
+
+
 @router.post("/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -62,7 +67,8 @@ async def login(
     result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalar_one_or_none()
 
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    # ✅ Await the async function
+    if not user or not await verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
@@ -72,11 +78,15 @@ async def login(
     access_token = await create_access_token({"sub": str(user.id)})
     refresh_token = await create_refresh_token({"sub": str(user.id)})
 
-    response = JSONResponse(content={
+    user_out = UserOut.model_validate(user).model_dump()
+    user_out["id"] = str(user_out["id"])  # Convert UUID to str
+
+    response = ORJSONResponse(content={
         "access_token": access_token,
         "token_type": "bearer",
-        "user": UserOut.model_validate(user).model_dump()
+        "user": user_out
     })
+
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,

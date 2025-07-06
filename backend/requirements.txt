@@ -5,5 +5,5 @@ bcrypt==3.2.2
 passlib[bcrypt]
 python-dotenv
 python-jose[cryptography]
-psycopg2-binary
 sqlalchemy>=2.0.0
+sqlalchemy[asyncio]

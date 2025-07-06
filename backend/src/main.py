@@ -3,12 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
 
-from src.databases.sqlite_database import init_db
+# from src.databases.sqlite_database import init_db
+from src.databases.pg_database import engine, Base
 from src.routes import auth_routes, todo_routes
+
+# @asynccontextmanager
+# async def lifespan(_: FastAPI):
+#     await init_db()
+#     yield
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await init_db()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
 
 app = FastAPI(lifespan=lifespan)

@@ -3,10 +3,10 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from typing import AsyncGenerator
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./database.db")
+SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL", "sqlite+aiosqlite:///./database.db")
 
 # Create async engine
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
 # Base class
 class Base(DeclarativeBase):

@@ -4,7 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.sqlite_models import TodoDB
+# from src.models.sqlite_models import TodoDB
+from src.models.pg_models import TodoDB
 from src.schemas.schemas import Todo, TodoCreate
 
 

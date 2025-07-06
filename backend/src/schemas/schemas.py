@@ -16,10 +16,10 @@ class Todo(BaseModel):
     description: Optional[str] = None
     completed: bool
     created_at: datetime
-    user_id: int
+    user_id: UUID
 
     model_config = {
-        "from_attributes": True  # ✅ replaces orm_mode = True in Pydantic v2
+        "from_attributes": True
     }
 
 # user schemas
@@ -28,7 +28,7 @@ class UserCreate(BaseModel):
     password: str
 
 class UserOut(BaseModel):
-    id: int
+    id: UUID
     email: str
 
     model_config = {

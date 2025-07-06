@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.databases.sqlite_database import get_session
+# from src.databases.sqlite_database import get_session
+from src.databases.pg_database import get_session
 from src.services.operations import (
     create_task,
     read_all_tasks,
@@ -10,7 +11,8 @@ from src.services.operations import (
     modify_task
 )
 from src.auth.dependencies import get_current_user
-from src.models.sqlite_models import User
+# from src.models.sqlite_models import User
+from src.models.pg_models import User
 from src.schemas.schemas import TodoCreate, Todo
 
 router = APIRouter()
