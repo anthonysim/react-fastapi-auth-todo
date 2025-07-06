@@ -12,6 +12,7 @@ from src.operations import (
 from src.dependencies import get_current_user
 from src.models import User
 from src.schemas import TodoCreate, Todo
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -19,16 +20,13 @@ router = APIRouter()
 @router.post("/task", response_model=Todo)
 async def add_task(
     todo: TodoCreate,
-    db: Session = Depends(get_session),
+    db: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
     """
     Add a new task for the current user.
-    - **todo**: Task details from the request body.
-    - **current_user**: The authenticated user.
-    - **Returns**: The newly created Todo item.
     """
-    return create_task(todo, db, current_user.id)
+    return await create_task(todo, db, current_user.id)
 
 
 @router.get("/tasks", response_model=list[Todo])

@@ -5,12 +5,13 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src.models import TodoDB
 from src.schemas import Todo, TodoCreate
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_task(
-        todo: TodoCreate,
-        db: Session,
-        user_id: str
+    todo: TodoCreate,
+    db: AsyncSession,
+    user_id: str
 ) -> Todo:
     db_task = TodoDB(
         id=str(uuid4()),
@@ -19,8 +20,8 @@ async def create_task(
         **todo.model_dump()
     )
     db.add(db_task)
-    db.commit()
-    db.refresh(db_task)
+    await db.commit()
+    await db.refresh(db_task)
     return Todo.model_validate(db_task)
 
 
