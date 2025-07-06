@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchWithAuth } from "../apis/fetchWithAuth";
 
 interface Todo {
-  id: number;
+  id: string;
   title: string;
   description: string;
 }
@@ -64,8 +64,20 @@ export default function TodoList() {
     cancelEdit();
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  const deleteTodo = async (id: string) => {
+    const res = await fetchWithAuth(
+      `${import.meta.env.VITE_API_URL}/task/${id}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (res.ok) {
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    } else {
+      console.error("Failed to delete todo");
+    }
   };
 
   return (
