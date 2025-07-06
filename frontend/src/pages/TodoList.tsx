@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchWithAuth } from "../apis/fetchWithAuth";
 
 interface Todo {
   id: number;
@@ -7,10 +8,18 @@ interface Todo {
 }
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([
-    { id: 1, title: "Buy groceries", description: "Milk, Bread, Eggs" },
-    { id: 2, title: "Workout", description: "Run 30 minutes" },
-  ]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/tasks`);
+      const data = await res.json();
+      setTodos(data);
+    };
+
+    fetchData();
+  }, []);
+
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDesc, setEditedDesc] = useState("");
