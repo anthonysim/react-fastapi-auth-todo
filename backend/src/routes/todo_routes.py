@@ -47,7 +47,7 @@ async def read_task(
 @router.patch("/task/{task_id}", response_model=Todo)
 async def update_task(
     task_id: str,
-    updated_todo: TodoCreate,  # ⚠️ all fields required
+    updated_todo: TodoCreate,
     db: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
