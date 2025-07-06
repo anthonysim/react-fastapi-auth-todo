@@ -1,6 +1,6 @@
 # auth-react-fastapi
 
-The purpose of this app was to practing setting up auth to get a better understanding of the auth flow.
+The purpose of this app was to practice setting up auth to get a better understanding of the auth flow.
 
 Basic CRUD funtionality was also added to get an understanding of using FastAPI and NEON Postgres.
 
