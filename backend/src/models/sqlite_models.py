@@ -10,7 +10,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from uuid import uuid4
-from src.database import Base  # ✅ import the correct Base
+from src.databases.sqlite_database import Base
 
 # db table for todos
 class TodoDB(Base):

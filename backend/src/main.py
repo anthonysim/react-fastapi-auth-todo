@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
 
-from src.database import init_db
+from src.databases.sqlite_database import init_db
 from src.routes import auth_routes, todo_routes
 
 @asynccontextmanager

@@ -7,16 +7,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from jose import jwt, JWTError
 
-from src.auth import (
+from src.auth.auth import (
     hash_password,
     create_access_token,
     create_refresh_token,
     verify_password
     )
-from src.database import get_session
-from src.dependencies import get_current_user
-from src.models import User
-from src.schemas import UserCreate, UserOut
+from src.databases.sqlite_database import get_session
+from src.auth.dependencies import get_current_user
+from src.models.sqlite_models import User
+from src.schemas.schemas import UserCreate, UserOut
 
 import os
 from dotenv import load_dotenv
