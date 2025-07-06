@@ -20,25 +20,33 @@ export default function TodoList() {
     fetchData();
   }, []);
 
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDesc, setEditedDesc] = useState("");
 
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (!newTitle.trim()) return;
 
-    const newTodo: Todo = {
-      id: Date.now(),
-      title: newTitle,
-      description: newDesc,
-    };
+    const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/task`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: newTitle.trim(),
+        description: newDesc.trim(),
+      }),
+    });
 
-    setTodos((prev) => [newTodo, ...prev]);
-    setNewTitle("");
-    setNewDesc("");
+    if (res.ok) {
+      const createdTodo = await res.json();
+      setTodos((prev) => [createdTodo, ...prev]);
+      setNewTitle("");
+      setNewDesc("");
+    } else {
+      console.error("Failed to create todo");
+    }
   };
 
   const startEdit = (todo: Todo) => {
@@ -53,15 +61,30 @@ export default function TodoList() {
     setEditedDesc("");
   };
 
-  const saveEdit = (id: number) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id
-          ? { ...todo, title: editedTitle, description: editedDesc }
-          : todo
-      )
+  const saveEdit = async (id: string) => {
+    const res = await fetchWithAuth(
+      `${import.meta.env.VITE_API_URL}/task/${id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editedTitle,
+          description: editedDesc,
+        }),
+      }
     );
-    cancelEdit();
+
+    if (res.ok) {
+      const updatedTodo = await res.json();
+
+      setTodos((prev) =>
+        prev.map((todo) => (todo.id === id ? updatedTodo : todo))
+      );
+
+      cancelEdit();
+    } else {
+      console.error("Failed to update todo");
+    }
   };
 
   const deleteTodo = async (id: string) => {
