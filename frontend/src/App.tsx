@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AuthAction, AuthPrompt } from "./types/types";
 
+import { fakeRegister } from "./apis/fakeApiCall";
+
 function App() {
   const [msg, setMsg] = useState("");
   const [isSignIn, setIsSignIn] = useState(true);
@@ -16,34 +18,38 @@ function App() {
   }, []);
 
   const handleAuth = async () => {
-    const endpoint = `${import.meta.env.VITE_API_URL}/${isSignIn ? "login" : "register"}`;
+    const data = fakeRegister(email, password);
+    data
+      .then(console.log)
+      .then(() => alert("Account successfully created. Please login!"));
+    // const endpoint = `${import.meta.env.VITE_API_URL}/${isSignIn ? "login" : "register"}`;
 
-    const body = isSignIn
-      ? new URLSearchParams({ username: email, password: password })
-      : JSON.stringify({ email, password });
+    // const body = isSignIn
+    //   ? new URLSearchParams({ username: email, password: password })
+    //   : JSON.stringify({ email, password });
 
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": isSignIn
-            ? "application/x-www-form-urlencoded"
-            : "application/json",
-        },
-        body,
-      });
+    // try {
+    //   const res = await fetch(endpoint, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": isSignIn
+    //         ? "application/x-www-form-urlencoded"
+    //         : "application/json",
+    //     },
+    //     body,
+    //   });
 
-      if (!res.ok) throw new Error("Auth failed");
+    //   if (!res.ok) throw new Error("Auth failed");
 
-      const data = await res.json();
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+    //   const data = await res.json();
+    //   localStorage.setItem("token", data.access_token);
+    //   localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate({ to: "/todo" }); // ✅ Redirect
-    } catch (err) {
-      alert("Failed to authenticate");
-      console.error(err);
-    }
+    //   navigate({ to: "/todo" }); // ✅ Redirect
+    // } catch (err) {
+    //   alert("Failed to authenticate");
+    //   console.error(err);
+    // }
   };
 
   const title = isSignIn ? AuthAction.SignIn : AuthAction.Register;
@@ -86,7 +92,7 @@ function App() {
 
           <button
             className={`w-full py-2 rounded text-white font-semibold transition ${actionColor}`}
-            onClick={handleAuth} // ✅ call your logic
+            onClick={handleAuth}
           >
             {title}
           </button>
