@@ -1,11 +1,11 @@
-# the business logic for the API calls
 from uuid import uuid4
 from datetime import datetime, timezone
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.models import TodoDB
 from src.schemas import Todo, TodoCreate
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_task(
@@ -22,35 +22,37 @@ async def create_task(
     db.add(db_task)
     await db.commit()
     await db.refresh(db_task)
-    return Todo.model_validate(db_task)
+    return Todo.model_validate(db_task, from_attributes=True)
 
 
 async def read_all_tasks(
-        db: Session,
-        user_id: str
+    db: AsyncSession,
+    user_id: str
 ) -> list[Todo]:
-    tasks = db.query(TodoDB).filter(TodoDB.user_id == user_id).all()
-    return [Todo.model_validate(task) for task in tasks]
+    stmt = select(TodoDB).where(TodoDB.user_id == user_id)
+    result = await db.execute(stmt)
+    tasks = result.scalars().all()
+    return [Todo.model_validate(task, from_attributes=True) for task in tasks]
 
 
-def get_task(
-        task_id: str,
-        db: Session,
-        user_id: str
+async def get_task(
+    task_id: str,
+    db: AsyncSession,
+    user_id: str
 ) -> Todo:
-    task = db.get(TodoDB, task_id)
+    task = await db.get(TodoDB, task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
-    return Todo.model_validate(task)
+    return Todo.model_validate(task, from_attributes=True)
 
 
 async def modify_task(
     task_id: str,
     updated_todo: TodoCreate,
-    db: Session,
+    db: AsyncSession,
     user_id: str
 ) -> Todo:
-    task = db.get(TodoDB, task_id)
+    task = await db.get(TodoDB, task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
 
@@ -58,20 +60,20 @@ async def modify_task(
     task.description = updated_todo.description
     task.completed = updated_todo.completed
 
-    db.commit()
-    db.refresh(task)
-    return Todo.model_validate(task)
+    await db.commit()
+    await db.refresh(task)
+    return Todo.model_validate(task, from_attributes=True)
 
 
 async def remove_task(
-        task_id: str,
-        db: Session,
-        user_id: str
+    task_id: str,
+    db: AsyncSession,
+    user_id: str
 ) -> Todo:
-    task = db.get(TodoDB, task_id)
+    task = await db.get(TodoDB, task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    db.delete(task)
-    db.commit()
-    return Todo.model_validate(task)
+    await db.delete(task)
+    await db.commit()
+    return Todo.model_validate(task, from_attributes=True)
