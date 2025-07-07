@@ -57,8 +57,6 @@ async def register(
     }
 
 
-
-
 @router.post("/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),

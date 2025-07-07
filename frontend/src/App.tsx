@@ -1,21 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AuthAction, AuthPrompt } from "./types/types";
 
-// import { fakeRegister } from "./apis/fakeApiCall";
-
 function App() {
-  const [msg, setMsg] = useState("");
   const [isSignIn, setIsSignIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/hello`)
-      .then((res) => res.json())
-      .then((data) => setMsg(data.message));
-  }, []);
 
   const handleAuth = async () => {
     const endpoint = `${import.meta.env.VITE_API_URL}/${isSignIn ? "login" : "register"}`;
@@ -38,8 +29,7 @@ function App() {
       if (!res.ok) throw new Error("Auth failed");
 
       const data = await res.json();
-      console.log(data);
-      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       navigate({ to: "/todos" }); // ✅ Redirect
@@ -62,9 +52,7 @@ function App() {
       <div className="w-full max-w-md p-8 space-y-6 bg-gray-900 border border-gray-800 shadow-lg rounded-2xl">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-semibold">Auth - React and FastAPI</h1>
-          <p className="text-sm text-gray-400">
-            {msg || "Connecting to backend..."}
-          </p>
+          <p className="text-sm text-gray-400"></p>
         </div>
 
         <div className="space-y-4">
