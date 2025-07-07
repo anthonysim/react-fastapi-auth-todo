@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "../apis/fetchWithAuth";
+import throttle from "lodash/throttle";
 
 interface Todo {
   id: string;
@@ -103,6 +104,9 @@ export default function TodoList() {
     }
   };
 
+  const throttledAddTodo = throttle(addTodo, 3000);
+  const throttledSaveTodo = throttle(saveEdit, 3000);
+
   return (
     <div className="min-h-screen p-10 text-white bg-gray-950">
       <div className="max-w-6xl mx-auto">
@@ -123,7 +127,7 @@ export default function TodoList() {
             onChange={(e) => setNewDesc(e.target.value)}
           />
           <button
-            onClick={addTodo}
+            onClick={() => throttledAddTodo()}
             className="self-center px-3 py-1 text-sm font-medium bg-indigo-600 rounded hover:bg-indigo-700"
           >
             Add
@@ -157,7 +161,7 @@ export default function TodoList() {
                 />
                 <div className="flex justify-center gap-2">
                   <button
-                    onClick={() => saveEdit(todo.id)}
+                    onClick={() => throttledSaveTodo(todo.id)}
                     className="px-3 py-1 bg-green-600 rounded hover:bg-green-700"
                   >
                     Save
